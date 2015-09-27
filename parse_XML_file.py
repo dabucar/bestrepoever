@@ -2,6 +2,7 @@
 ''' XML extraction v0.0.0.0.1 '''
 ''' dabucar 2015-08-24 '''
 
+import codecs
 import os.path
 import sys
 import xml.etree.ElementTree as ET
@@ -25,28 +26,31 @@ for elem in tree.iter():
 	elem_set.add(elem.tag)
 print sorted(list(elem_set))
 
+pmids = tree.findall(".//PubmedArticle/MedlineCitation/PMID")
+
 # journal title
-res = tree.findall(".//journal-title")
-if not res is None:
-	journal_title = res[0].text 
+jtitles = tree.findall(".//Article/Journal/Title")
+
 # journal issn
-res = tree.findall(".//issn")
-if not res is None:
-	journal_issn = res[0].text 
+issns = tree.findall(".//Article/Journal/ISSN")
 
 # article title
-res = tree.findall(".//article-title")
-if not res is None:
-	article_title = res[0].text 
+atitles = tree.findall(".//ArticleTitle")
+
+# abstract
+abstracts = tree.findall(".//Article/Abstract")
 
 # authors
-res = tree.findall(".//*[@contrib-type='author']/name")
-if not res is None:
-	authors = []
-	for author in res:
-		surname = author.find("surname").text
-		given_names = author.find("given-names").text
-		authors.append((surname, given_names))
+alists = tree.findall(".//AuthorList")
+lnfnlist = []
+for al in alists:
+    lnfn = []
+    for auth in al.findall("Author"):
+        ln, fn = auth.findtext("LastName"), auth.findtext("ForeName")
+        lnfn.append(ln+", "+fn)
+    lnfnlist.append(lnfn)
 
-print journal_title, journal_issn, article_title, authors
+utf8 = codecs.getencoder("UTF-8")
+for i in range(len(pmids)):
+    print utf8("\n" + "".join(pmids[i].itertext()) + "\n" + "".join(jtitles[i].itertext()) + "\n" + "".join(issns[i].itertext()) + "\n" + "".join(atitles[i].itertext()) + "".join(abstracts[i].itertext()) + "\n".join(lnfnlist[i]))[0]
 
