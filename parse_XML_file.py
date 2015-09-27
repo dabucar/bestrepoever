@@ -1,3 +1,5 @@
+from __future__ import print_function
+
 ''' ain't nobody got time fo wait '''
 ''' XML extraction v0.0.0.0.1 '''
 ''' dabucar 2015-08-24 '''
