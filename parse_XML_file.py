@@ -15,6 +15,8 @@ if not len(sys.argv) > 1:
 	print("Provide at least one file, bitte", file=sys.stderr)
 	sys.exit()
 
+docs = []
+
 for file_path in sys.argv[1:]:
 	# check if argument is a valid file
 	if not os.path.isfile(file_path):
@@ -74,7 +76,6 @@ for file_path in sys.argv[1:]:
 		"abstract" : abstract,
 		"abstract_sentences" : abstract_sentences
 	}
+	docs.append(document)
 
-	# output results to stdout
-	document_string = json.dumps(document, indent=4)
-	print(document_string, file=sys.stdout)
+print(json.dumps(docs, indent=4), file=sys.stdout)
