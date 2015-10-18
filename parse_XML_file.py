@@ -4,6 +4,7 @@ from __future__ import print_function
 ''' XML extraction v0.0.0.0.1 '''
 ''' dabucar 2015-08-24 '''
 
+from functools import reduce
 import json
 import nltk
 import os.path
@@ -61,7 +62,7 @@ for file_path in sys.argv[1:]:
 	# abstract
 	res = tree.findall(".//abstract/p")
 	if res:
-		abstract = " ".join(map(lambda x: x.text, res))
+            abstract = " ".join(reduce(lambda x, y: x+y, map(lambda x: x.itertext(), res)))
 
 	# abstract sentences
 	abstract_sentences = nltk.sent_tokenize(abstract)
