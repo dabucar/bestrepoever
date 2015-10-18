@@ -52,6 +52,10 @@ for file_path in sys.argv[1:]:
             given_names = author.find("given-names").text
             authors.append((surname, given_names))
 
+    res = tree.findall(".//article-id[@pub-id-type='pmid']")
+    if res:
+        pmid = res[0].text
+
     # abstract
     res = tree.findall(".//abstract/p")
     if res:
@@ -62,6 +66,7 @@ for file_path in sys.argv[1:]:
 
     # put results into a dict
     document = {
+        "pmid" : pmid,
         "article_title" : article_title,
         "authors" : authors,
         "journal_title" : journal_title,
