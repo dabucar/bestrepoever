@@ -5,6 +5,7 @@ from __future__ import print_function
 ''' dabucar 2015-08-24 '''
 
 import json
+import nltk
 import os.path
 import sys
 import xml.etree.ElementTree as ET
@@ -55,6 +56,9 @@ for file_path in sys.argv[1:]:
     res = tree.findall(".//abstract/p")
     if res:
         abstract = " ".join(map(lambda x: x.text, res))
+    
+    # abstract sentences
+    abstract_sentences = nltk.sent_tokenize(abstract)
 
     # put results into a dict
     document = {
@@ -62,7 +66,8 @@ for file_path in sys.argv[1:]:
         "authors" : authors,
         "journal_title" : journal_title,
         "journal_issn" : journal_issn,
-        "abstract" : abstract
+        "abstract" : abstract, 
+        "abstract_sentences" : abstract_sentences
     }
 
     # output results to stdout
