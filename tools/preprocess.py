@@ -1,28 +1,51 @@
 from __future__ import print_function
 
-''' ain't nobody got time fo wait '''
-''' XML extraction v0.0.0.0.1 '''
-''' dabucar 2015-08-24 '''
+""" This program preprocesses XML files from PubMed Central and extracts the
+relevant information (authors, title, abstract text, sentences, etc). The
+output should be ready to be processed by an NLP pipeline in a lightweight
+format (such as JSON?).
+
+Usage: 
+
+	preprocess.py <some_file>.xml [<another_file>.xml ...]
+	
+	or
+	
+	find . | grep xml | python preprocess.py"""
 
 from functools import reduce
+import itertools
 import json
-import nltk
 import os.path
 import sys
 import xml.etree.ElementTree as ET
 
+# delimiter used to separate JSON documents without blocking
+DELIMITER = "---"
+
 # check if arguments have been provided
-if not len(sys.argv) > 1:
-	print("Provide at least one file, bitte", file=sys.stderr)
-	sys.exit()
+if len(sys.argv) > 1:
+	file_paths = sys.argv[1:]
+# if not, read filenames from stdin
+else:
+	file_paths = sys.stdin.readlines()
 
-docs = []
+# flag used to avoid printing the delimiter the first time
+first_document = True 
 
-for file_path in sys.argv[1:]:
+for file_path in file_paths:
+	file_path = file_path.strip()
+	
+	# output delimiter to stdin to signal end of document
+	if not first_document:
+		print(DELIMITER, file=sys.stdout)
+	
+	# set the flag to False
+	first_document = False
+
 	# check if argument is a valid file
 	if not os.path.isfile(file_path):
-		print("Not a valid file, gtfo", file=sys.stderr)
-		sys.exit()
+		raise IOError("file not found, gtfo")
 
 	tree = ET.parse(file_path)
 
@@ -62,10 +85,8 @@ for file_path in sys.argv[1:]:
 	# abstract
 	res = tree.findall(".//abstract/p")
 	if res:
-            abstract = " ".join(reduce(lambda x, y: x+y, map(lambda x: x.itertext(), res)))
-
-	# abstract sentences
-	abstract_sentences = nltk.sent_tokenize(abstract)
+		abstract = " ".join(reduce(lambda x, y: itertools.chain(x, y), \
+			map(lambda x: x.itertext(), res)))
 
 	# put results into a dict
 	document = {
@@ -74,9 +95,8 @@ for file_path in sys.argv[1:]:
 		"authors" : authors,
 		"journal_title" : journal_title,
 		"journal_issn" : journal_issn,
-		"abstract" : abstract,
-		"abstract_sentences" : abstract_sentences
+		"abstract" : abstract
 	}
-	docs.append(document)
 
-print(json.dumps(docs, indent=4), file=sys.stdout)
+	# output results to stdout
+	print(json.dumps(document, indent=4), file=sys.stdout)
