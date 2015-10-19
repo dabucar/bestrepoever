@@ -10,7 +10,7 @@ wget ftp://ftp.ncbi.nlm.nih.gov/pub/pmc/articles.A-B.tar.gz
 wget ftp://ftp.ncbi.nlm.nih.gov/pub/pmc/articles.C-H.tar.gz
 wget ftp://ftp.ncbi.nlm.nih.gov/pub/pmc/articles.I-N.tar.gz
 wget ftp://ftp.ncbi.nlm.nih.gov/pub/pmc/articles.O-Z.tar.gz
-for file in $(find . | grep "tar.gz") do
+for file in $(ls *tar.gz); do
   tar -xvf $file
 done
 rm -rf *.tar.gz
