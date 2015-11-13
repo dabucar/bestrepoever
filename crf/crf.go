@@ -58,7 +58,7 @@ func main() {
 		for _, sf := range row {
 			ii, err := strconv.Atoi(sf)
 			if err != nil {
-				fmt.Fprintf(os.Stderr, "Error when being sad\n")
+				fmt.Fprintf(os.Stderr, "Error when converting matrix value to integer\n")
 				os.Exit(1)
 			}
 			X[rownr] = append(X[rownr], ii)
