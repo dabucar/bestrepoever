@@ -35,12 +35,12 @@ func main() {
 		os.Exit(1)
 	}
 
-	var l int
-	var rownr int
-
 	fr := csv.NewReader(f)
 
-	X := make([][]int, 8)
+	var rowcount int
+	const EXPROWS int = 1000
+
+	X := make([][]int, 0, EXPROWS)
 
 	for {
 		row, err := fr.Read()
@@ -50,9 +50,8 @@ func main() {
 			}
 			break
 		}
-		if l == 0 {
-			l = len(row)
-		}
+
+		var convrow []int
 
 		fmt.Fprintf(os.Stdout, "%q\n", row)
 		for _, sf := range row {
@@ -61,16 +60,18 @@ func main() {
 				fmt.Fprintf(os.Stderr, "Error when converting matrix value to integer\n")
 				os.Exit(1)
 			}
-			X[rownr] = append(X[rownr], ii)
+
+			convrow = append(convrow, ii)
 		}
-		rownr++
+		X = append(X, convrow)
+		rowcount++
 	}
 
-	theta := make([][]float64, l)
+	theta := make([][]float64, rowcount)
 
 	for i, _ := range theta {
 		//theta[i] = make([]float64, 4)
 		theta[i] = []float64{2, 3, 5.2, 4}
 	}
-	learniteration(X, theta, l)
+	learniteration(X, theta, rowcount)
 }
