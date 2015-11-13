@@ -46,7 +46,7 @@ func main() {
 		row, err := fr.Read()
 		if err != nil {
 			if err != io.EOF {
-				fmt.Fprintf(os.Stderr, "Error when reading row\n")
+				fmt.Fprintf(os.Stderr, "Error when reading row: %q\n", err)
 			}
 			break
 		}
